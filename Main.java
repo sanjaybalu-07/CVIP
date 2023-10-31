@@ -1,121 +1,84 @@
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
-class Student {
-    private String name;
-    private int rollNumber;
-    private double feesPaid;
 
-    public Student(String name, int rollNumber) {
-        this.name = name;
-        this.rollNumber = rollNumber;
-        this.feesPaid = 0;
+// Interface for ATM operations
+interface ATM {
+    void checkBalance();
+    void deposit(double amount);
+    void withdraw(double amount);
+}
+
+// ATM implementation (Interface)
+class ATMImpl implements ATM {
+    private double balance;
+
+    public ATMImpl(double initialBalance) {
+        balance = initialBalance;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void checkBalance() {
+        System.out.println("Current Balance: $" + balance);
     }
 
-    public int getRollNumber() {
-        return rollNumber;
+    @Override
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("$" + amount + " deposited successfully.");
+        } else {
+            System.out.println("Invalid amount for deposit.");
+        }
     }
 
-    public double getFeesPaid() {
-        return feesPaid;
-    }
-
-    public void payFess(double amount) {
-        feesPaid += amount;
-    }
-
-    public double getRemainingFees(double totalFees) {
-        return totalFees - feesPaid;
+    @Override
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("$" + amount + " withdrawn successfully.");
+        } else {
+            System.out.println("Insufficient funds or invalid amount for withdrawal.");
+        }
     }
 }
-    class FeesManagementSystem {
-        private double totalFees;
-        private Map<Integer, Student> studentMap;
 
-        public FeesManagementSystem(double totalfees) {
-            this.totalFees = totalfees;
-            this.studentMap = new HashMap<>();
-        }
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter initial balance: $");
+        double initialBalance = scanner.nextDouble();
 
-        public void addStudent(Student student) {
-            studentMap.put(student.getRollNumber(), student);
-        }
+        ATM atm = new ATMImpl(initialBalance);
 
-        public void recordPayment(int rollNumber, double amount) {
-            Student student = studentMap.get(rollNumber);
-            if (student != null) {
-                student.payFess(amount);
-                System.out.println("Payment recorded successfully.");
-            } else {
-                System.out.println("Student with roll Number " + rollNumber + "not found.");
-            }
-        }
+        while (true) {
+            System.out.println("\nATM Menu:");
+            System.out.println("1. Check Balance");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Exit");
+            System.out.print("Select an option: ");
+            int choice = scanner.nextInt();
 
-        public void displayStudentDetails(int rollNumber) {
-            Student student = studentMap.get(rollNumber);
-            if (student != null) {
-                System.out.println("Student Name: " + student.getName());
-                System.out.println("Roll Number: " + student.getRollNumber());
-                System.out.println("Fees Paid: " + student.getFeesPaid());
-                System.out.println("Remaining Fees: " + student.getRemainingFees(totalFees));
-            } else {
-                System.out.println("Student with roll number " + rollNumber + "not found.");
-            }
-        }
-    }
-    public class Main{
-        public static void main(String[] args) {
-            Scanner scanner=new Scanner(System.in);
-
-            System.out.print("Enter total fees:");
-            double totalFees=scanner.nextDouble();
-            FeesManagementSystem feesSystem=new FeesManagementSystem(totalFees);
-
-            while (true){
-                System.out.println("--------------------------------------");
-                System.out.println("1.Add Student");
-                System.out.println("2.Record Payment");
-                System.out.println("3.Display Student Details");
-                System.out.println("4.Exit");
-                System.out.println("--------------------------------------");
-                System.out.print("Enter your choice: ");
-                int choice= scanner.nextInt();
-
-                switch(choice){
-                    case 1:
-                        System.out.print("Enter Student name:");
-                        String name=scanner.next();
-                        System.out.print("Enter roll number:");
-                        int rollNumber=scanner.nextInt();
-                        Student student=new Student(name,rollNumber);
-                        feesSystem.addStudent(student);
-                        System.out.println("Student added successfully");
-                        break;
-                    case 2:
-                        System.out.print("Enter roll number:");
-                        rollNumber=scanner.nextInt();
-                        System.out.print("Enter payment amount:");
-                        double paymentAmount=scanner.nextDouble();
-                        feesSystem.recordPayment(rollNumber,paymentAmount);
-                        break;
-                    case 3:
-                        System.out.print("Enter roll number:");
-                        rollNumber=scanner.nextInt();
-                        feesSystem.displayStudentDetails(rollNumber);
-                        break;
-                    case 4:
-                        System.out.println("Exiting...");
-                        scanner.close();
-                        System.exit(0);
-                    default:
-                        System.out.println("Invalid Choice");
-                }
+            switch (choice) {
+                case 1:
+                    atm.checkBalance();
+                    break;
+                case 2:
+                    System.out.print("Enter amount to deposit: $");
+                    double depositAmount = scanner.nextDouble();
+                    atm.deposit(depositAmount);
+                    break;
+                case 3:
+                    System.out.print("Enter amount to withdraw: $");
+                    double withdrawAmount = scanner.nextDouble();
+                    atm.withdraw(withdrawAmount);
+                    break;
+                case 4:
+                    System.out.println("Thank you for using the ATM. Goodbye!");
+                    scanner.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please select a valid option.");
             }
         }
     }
-
-
+}
